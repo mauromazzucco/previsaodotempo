@@ -76,7 +76,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="HUMIDITY"
+                android:text="HUMIDADE"
                 android:id="@+id/humidityLabel"
                 android:textColor="#80ffffff"
                 android:gravity="center_horizontal" />
@@ -100,7 +100,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="RAIN/SNOW"
+                android:text="CHUVA"
                 android:id="@+id/precipLabel"
                 android:textColor="#80ffffff"
                 android:layout_gravity="center_horizontal"

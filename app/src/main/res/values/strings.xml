@@ -1,8 +1,5 @@
 <resources>
-    <string name="app_name">Stormy</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Previsão do Tempo</string>
     <string name="error_title">Oops</string>
     <string name="error_message">Error, please try again</string>
     <string name="error_ok_button">ok</string>

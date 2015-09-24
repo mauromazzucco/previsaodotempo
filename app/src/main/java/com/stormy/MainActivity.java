@@ -3,6 +3,11 @@ package com.stormy;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -40,6 +47,10 @@ public class MainActivity extends Activity {
     @Bind(R.id.iconImageView) ImageView iconImageView;
     @Bind(R.id.refreshImageView) ImageView refreshImageView;
     @Bind(R.id.progressBar) ProgressBar progressBar;
+    @Bind(R.id.locationLabel) TextView locationLabel;
+    double lat;
+    double lng;
+
 
 
     @Override
@@ -49,22 +60,52 @@ public class MainActivity extends Activity {
         ButterKnife.bind(this);
         progressBar.setVisibility(View.INVISIBLE);
 
-        final double latitude =  -23.3004;
-        final double longitude = -47.2757;
-
         refreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getForecast(latitude,longitude);
+                getForecast();
 
             }
         });
-        getForecast(latitude,longitude);
+        getForecast();
     }
 
-    private void getForecast(double latitude, double longitude) {
+    private void getForecast() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationListener listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                lng = location.getLongitude();
+                lat = location.getLatitude();
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        };
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, listener);
+        Geocoder gcd = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = gcd.getFromLocation(lat, lng, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (addresses.size() > 0)
+            locationLabel.setText(addresses.get(0).getLocality() + " - " + addresses.get(0).getAdminArea());
         String api = "ed218614c63874ef6ba4b3db0e610f1b";
-        String forecastUrl = "https://api.forecast.io/forecast/" + api + "/" + latitude + "," + longitude;
+        String forecastUrl = "https://api.forecast.io/forecast/" + api + "/" + lat + "," + lng + "?lang=pt";
         if(isNetWorkAvailable()) {
             toggleRefresh();
             OkHttpClient client = new OkHttpClient();
@@ -134,7 +175,7 @@ public class MainActivity extends Activity {
 
     private void updateDisplay() {
         temperatureLabel.setText(currentWeather.getTemperature() + "");
-        timeLabel.setText("At " + currentWeather.getFormattedTime() + " it will be");
+        timeLabel.setText("Previsão do tempo as " + currentWeather.getFormattedTime());
         humidityValue.setText(currentWeather.getHumidity() + "%");
         precipValue.setText(currentWeather.getPrecipitation() + "%");
         summaryLabel.setText(currentWeather.getSummary());
